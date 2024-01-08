@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "347731564601",
+    "project_id": "blue-scooters",
+    "storage_bucket": "blue-scooters.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:347731564601:android:c3ee24d81166fe54aa95e8",
+        "android_client_info": {
+          "package_name": "com.example.flashchat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvvoSYrVwQvznQu9RM-BbM86KReDi_NEE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
