@@ -4,18 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:bluescooters/screens/welcome_screen.dart';
 import 'package:bluescooters/screens/login_screen.dart';
 import 'package:bluescooters/screens/registration_screen.dart';
-import 'package:bluescooters/screens/chat_screen.dart';
 import 'package:bluescooters/screens/product_description.dart';
 import 'package:bluescooters/screens/stream_experiment.dart';//TODO: remove in production
-import 'package:bluescooters/screens/location.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:camera/camera.dart';
-import 'package:http/http.dart';
-import 'firebase_common.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'camera_common.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 Future<void> main() async {
@@ -50,14 +44,35 @@ class FlashChat extends StatelessWidget {
           bodyLarge: TextStyle(color: Colors.black54),
         ),
       ),
+        onGenerateRoute: (settings) {
+          if (settings.name == ProductDescription.id) {
+            // Extract arguments from settings
+            Map<String, dynamic> arguments =
+            settings.arguments as Map<String, dynamic>;
+
+            // Check if the required parameter is present
+            if (arguments.containsKey('scooter_id') && arguments.containsKey('scooter_owner')) {
+              // Return MaterialPageRoute with the ProductDescription widget
+              return MaterialPageRoute(
+                builder: (context) => ProductDescription(
+                  scooter_id: arguments['scooter_id'],
+                  scooter_owner: arguments['scooter_owner'],
+                ),
+              );
+            }
+          }
+
+          // Handle other routes or return null
+          // For example, return a MaterialPageRoute for a default page
+          return MaterialPageRoute(builder: (context) => Container());
+        },
       initialRoute: MapSample.id,
       routes:{
         WelcomeScreen.id: (context) => WelcomeScreen(),
         LoginScreen.id: (context) => LoginScreen(),
         RegistrationScreen.id: (context) => RegistrationScreen(),
-        ProductDescription.id: (context) => ProductDescription(),
         CameraApp.id: (context) => CameraApp(),
-        MyApp.id: (context) => MyApp(),
+        // MyApp.id: (context) => MyApp(),
         MapSample.id: (context) => MapSample(),
         ChatToDemoStream.id: (context) => ChatToDemoStream()
       }

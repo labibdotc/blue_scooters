@@ -39,8 +39,13 @@ class _scooterCardState extends State<scooterCard> {
           child: InkWell(
             onTap: () {
               // Handle button press
-              print('Button pressed!');
-              Navigator.pushNamed(context, ProductDescription.id);
+              // print('Button pressed!'); //TODO: remove in production
+              Navigator.pushNamed(context, ProductDescription.id,
+                arguments: {
+                'scooter_id': name,
+                  'scooter_owner': owner,
+                },
+              );
             },
             onTapDown: (_) {
               // Set the state to indicate button press

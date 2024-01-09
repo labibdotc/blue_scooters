@@ -1,6 +1,8 @@
 import 'package:bluescooters/widgets/dragableWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:bluescooters/db/get_scooters.dart';
 
 
 
@@ -88,6 +90,12 @@ class AnimateCamera extends StatefulWidget {
 
 class AnimateCameraState extends State<AnimateCamera> {
   late MapboxMapController mapController;
+  late GlobalKey<DragWidgetState> childKey;
+  @override
+  void initState() {
+    super.initState();
+    childKey = GlobalKey<DragWidgetState>();
+  }
   String scooter_station = "Campus Center";
   MyLocationTrackingMode _myLocationTrackingMode = MyLocationTrackingMode.None;
   List<Object>? _featureQueryFilter;
@@ -127,6 +135,9 @@ class AnimateCameraState extends State<AnimateCamera> {
 
 
   }
+  void updateStationInChild(String newStation) {
+    childKey.currentState?.updateStationInChild(newStation);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -140,11 +151,7 @@ class AnimateCameraState extends State<AnimateCamera> {
               List features = await mapController.queryRenderedFeatures(point, ['tufts-campus2'], _featureQueryFilter); // replace with your layer name
               if (features.length > 0 ){
                 print(features.first["properties"]["title"]);
-                print("scooter clicked");
-
-                setState(() {
-                  scooter_station = features.first["properties"]["title"];
-                });
+                updateStationInChild(features.first["properties"]["title"]);
               }
           },
             myLocationTrackingMode: _myLocationTrackingMode,
@@ -172,10 +179,12 @@ class AnimateCameraState extends State<AnimateCamera> {
             bottom: 200,
             right:20,
             child: _myLocationTrackingModeCycler()),
-          DragWidget(location:scooter_station),]);
+          DragWidget(key: childKey),]);
 
   }
 }
+
+
 
 
 

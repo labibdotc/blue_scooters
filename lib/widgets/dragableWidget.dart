@@ -2,16 +2,32 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:bluescooters/widgets/scooter_card.dart';
 import 'package:bluescooters/db/get_scooters.dart';
+class DragWidget extends StatefulWidget {
+  DragWidget({Key? key}) : super(key: key);
 
+  @override
+  State<DragWidget> createState() => DragWidgetState();
+}
 
-//dragable menu of scooters at bottom
-class DragWidget extends StatelessWidget {
-  String location = "";
-  DragWidget({required this.location});
-
+class DragWidgetState extends State<DragWidget> {
+  String location = "campus center";
   final storage = FirebaseStorage.instance;
-  final List<List<String>> scooterInfos = [["Amos","El Trinidad's scooter","images/scooter_prev_ui.png"],["Ismail","El Toto Ismail","images/scooter_prev_ui.png"]];
+  int scooter_count = 0;
 
+  @override
+  void initState() {
+    super.initState();
+  }
+  void updateStationInChild(String newStation) {
+    setState(() {
+      location = newStation;
+    });
+  }
+  void newScooterCallback(int scooterCount) {
+    setState(() {
+      scooter_count = scooterCount;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
@@ -35,7 +51,7 @@ class DragWidget extends StatelessWidget {
           child:
           SingleChildScrollView(
             controller: scrollController,
-            physics: ClampingScrollPhysics(),
+            physics: const ClampingScrollPhysics(),
             child:
 
             Column(
@@ -58,17 +74,18 @@ class DragWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     Text("Scooters at ${location}", style: TextStyle(color:Colors.black, fontSize: 17),),
-                    Text("${scooterInfos.length} scooters", style: TextStyle(color:Color(0xFFCFCCD4), fontSize: 15),),
+                    // Text("${scooter_count} scooters", style: TextStyle(color:Color(0xFFCFCCD4), fontSize: 15),), //TODO: uncomment to add the count of scooters
 
                   ],
                 ),
                 // ...scooterInfos.map((args) => scooterCard(owner: args[0], name: args[1], image: args[2])),
-                // Expanded(child: station_scooters()),
-                // station_scooters(),
+
                 Container(
+                  //TODO: change these hardcoded values
                   width: 10000,
-                  height: 10000,
-                  child: station_scooters(),
+                  height: 1000, //TODO: potential overflow, but for now restricts the bouncing when dragged
+                  padding: EdgeInsets.zero,
+                  child: station_scooters(callback: newScooterCallback, station_name: location.replaceAll(' ', '_'),),
                 )
                 // ... more scooterInfos
               ],
@@ -79,4 +96,3 @@ class DragWidget extends StatelessWidget {
     );
   }
 }
-
