@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bluescooters/widgets/roundedButton.dart';
 import 'package:bluescooters/screens/camera.dart';
+import 'package:bluescooters/screens/payment.dart';
 final firestore = FirebaseFirestore.instance;
 User? loggedInUser;
 
@@ -222,11 +223,34 @@ class _ProductDescriptionState extends State<ProductDescription> {
                         ),
                         RoundedButton(
                             callback: () async {
-                              Navigator.pushNamed(context, CameraApp.id);
-
+                              // Navigator.pushNamed(context, CameraApp.id);
+                                Navigator.pushNamed(context, Payment.id,
+                                    arguments: {
+                                      "payment_amount": 1,
+                                      "rider_id": "10",
+                                      "owner_id": "01"
+                                    }
+                                );
                             },
                             color: Color(0xFF6938D3),
                             text: 'Book a Ride!'),
+                      // InkWell(
+                      //   onTap: () {
+                      //     // Handle button press
+                      //     // print('Button pressed!'); //TODO: remove in production
+                      //     Navigator.pushNamed(context, Payment.id,
+                      //         arguments: {
+                      //           "payment_amount": 1,
+                      //           "rider_id": "10",
+                      //           "owner_id": "01"
+                      //         }
+                      //     );
+                      //   },
+                      //   child: Text('Book a Ride!', style: TextStyle(color: Color(0xFF6938D3)),)
+                      // )
+
+
+
                       ],
                     ),
                   ),

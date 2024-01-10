@@ -83,7 +83,7 @@ class DragWidgetState extends State<DragWidget> {
                 Container(
                   //TODO: change these hardcoded values
                   width: 10000,
-                  height: 1000, //TODO: potential overflow, but for now restricts the bouncing when dragged
+                  height: 100, //TODO: potential overflow, but for now restricts the bouncing when dragged
                   padding: EdgeInsets.zero,
                   child: station_scooters(callback: newScooterCallback, station_name: location.replaceAll(' ', '_'),),
                 )

@@ -5,6 +5,7 @@ import 'package:bluescooters/screens/welcome_screen.dart';
 import 'package:bluescooters/screens/login_screen.dart';
 import 'package:bluescooters/screens/registration_screen.dart';
 import 'package:bluescooters/screens/product_description.dart';
+import 'package:bluescooters/screens/payment.dart';
 import 'package:bluescooters/screens/stream_experiment.dart';//TODO: remove in production
 import 'package:firebase_core/firebase_core.dart';
 import 'package:camera/camera.dart';
@@ -62,9 +63,27 @@ class FlashChat extends StatelessWidget {
             }
           }
 
+          if (settings.name == Payment.id) {
+            // Extract arguments from settings
+            Map<String, dynamic> arguments =
+            settings.arguments as Map<String, dynamic>;
+
+            // Check if the required parameter is present
+            if (arguments.containsKey('owner_id') && arguments.containsKey('payment_amount') && arguments.containsKey('rider_id')) {
+              // Return MaterialPageRoute with the ProductDescription widget
+              return MaterialPageRoute(
+                builder: (context) => Payment(
+                  payment_amount: arguments['payment_amount'],
+                  owner_id: arguments['owner_id'],
+                  rider_id: arguments['rider_id'],
+                ),
+              );
+            }
+          }
+
           // Handle other routes or return null
           // For example, return a MaterialPageRoute for a default page
-          return MaterialPageRoute(builder: (context) => Container());
+          return MaterialPageRoute(builder: (context) => Container(color: Colors.white));
         },
       initialRoute: MapSample.id,
       routes:{

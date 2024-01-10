@@ -818,6 +818,12 @@ PODS:
     - FlutterMacOS
   - PromisesObjC (2.3.1)
   - RecaptchaInterop (100.0.0)
+  - square_in_app_payments (1.6.2):
+    - Flutter
+    - SquareBuyerVerificationSDK (= 1.6.2)
+    - SquareInAppPaymentsSDK (= 1.6.2)
+  - SquareBuyerVerificationSDK (1.6.2)
+  - SquareInAppPaymentsSDK (1.6.2)
 
 DEPENDENCIES:
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
@@ -832,6 +838,7 @@ DEPENDENCIES:
   - mapbox_gl (from `.symlinks/plugins/mapbox_gl/ios`)
   - modal_progress_hud_nsn (from `.symlinks/plugins/modal_progress_hud_nsn/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - square_in_app_payments (from `.symlinks/plugins/square_in_app_payments/ios`)
 
 SPEC REPOS:
   trunk:
@@ -860,6 +867,8 @@ SPEC REPOS:
     - nanopb
     - PromisesObjC
     - RecaptchaInterop
+    - SquareBuyerVerificationSDK
+    - SquareInAppPaymentsSDK
 
 EXTERNAL SOURCES:
   camera_avfoundation:
@@ -886,6 +895,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/modal_progress_hud_nsn/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  square_in_app_payments:
+    :path: ".symlinks/plugins/square_in_app_payments/ios"
 
 SPEC CHECKSUMS:
   abseil: 926fb7a82dc6d2b8e1f2ed7f3a718bce691d1e46
@@ -925,7 +936,10 @@ SPEC CHECKSUMS:
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
+  square_in_app_payments: d10b915e04a51a37be9192ee28830af05fc73f48
+  SquareBuyerVerificationSDK: c2a0941aca554d45ee176ecf778a35cf847c0abe
+  SquareInAppPaymentsSDK: 071115bf6d0c2dbcb931e66cedbe3b383d320ee3
 
-PODFILE CHECKSUM: cf46a79b008c1a0daae89bf60acffe9d4c93745a
+PODFILE CHECKSUM: 6025cc152cf74c45df08ebe88ede7333491e6e52
 
 COCOAPODS: 1.14.3
