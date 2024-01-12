@@ -1,6 +1,8 @@
+import 'package:bluescooters/payment/PaymentsRepository.dart';
 import 'package:flutter/material.dart';
 import 'package:square_in_app_payments/models.dart';
 import 'package:square_in_app_payments/in_app_payments.dart';
+import 'package:bluescooters/screens/InTrip.dart';
 import 'dart:io';
 
 
@@ -16,9 +18,7 @@ class Payment extends StatefulWidget {
 }
 
 class _PaymentState extends State<Payment>{
-  Future<void> _initSquarePayment() async {
-    await InAppPayments.setSquareApplicationId('sandbox-sq0idb-O4lvBauO1sZhztTGGrAqMw');
-  }
+
   Future _setIOSCardEntryTheme() async {
     var themeConfiguationBuilder = IOSThemeBuilder();
     themeConfiguationBuilder.saveButtonTitle = 'Pay';
@@ -38,51 +38,8 @@ class _PaymentState extends State<Payment>{
 
     await InAppPayments.setIOSCardEntryTheme(themeConfiguationBuilder.build());
   }
-  /**
-   * An event listener to start card entry flow
-   */
-  Future<void> _onStartCardEntryFlow() async {
-    await InAppPayments.startCardEntryFlow(
-        onCardNonceRequestSuccess: _onCardEntryCardNonceRequestSuccess,
-        onCardEntryCancel: _onCancelCardEntryFlow);
-  }
 
-  /**
-   * Callback when card entry is cancelled and UI is closed
-   */
-  void _onCancelCardEntryFlow() {
-    // Handle the cancel callback
-  }
 
-  /**
-   * Callback when successfully get the card nonce details for processig
-   * card entry is still open and waiting for processing card nonce details
-   */
-  void _onCardEntryCardNonceRequestSuccess(CardDetails result) async {
-    try {
-      // take payment with the card nonce details
-      // you can take a charge
-      // await chargeCard(result);
-      print('success!');
-      // payment finished successfully
-      // you must call this method to close card entry
-      // this ONLY apply to startCardEntryFlow, please don't call this method when use startCardEntryFlowWithBuyerVerification
-      InAppPayments.completeCardEntry(
-          onCardEntryComplete: _onCardEntryComplete);
-    } on Exception catch (ex) {
-      // payment failed to complete due to error
-      // notify card entry to show processing error
-      InAppPayments.showCardNonceProcessingError(ex.toString());
-    }
-  }
-
-  /**
-   * Callback when the card entry is closed after call 'completeCardEntry'
-   */
-  void _onCardEntryComplete() {
-    // Update UI to notify user that the payment flow is finished successfully
-    print("card entry complete");
-  }
 
   @override
   void initState() {
@@ -94,17 +51,14 @@ class _PaymentState extends State<Payment>{
     // _initSquarePayment();
     //
     // // Set iOS card entry theme if running on iOS
-    // if (Platform.isIOS) {
-    //   _setIOSCardEntryTheme();
-    // }
+    if (Platform.isIOS) {
+      _setIOSCardEntryTheme();
+    }
     //
     // // Start the card entry flow
     // _onStartCardEntryFlow();
   }
-  _payment() async {
-    await _initSquarePayment();
-    await _onStartCardEntryFlow();
-  }
+
   @override
   Widget build(BuildContext context) {
     print("building payment screen");
@@ -132,7 +86,16 @@ class _PaymentState extends State<Payment>{
             ElevatedButton(
               onPressed: () {
                 // Trigger the card entry flow when the button is pressed
-                _payment();
+                print("Processing payment logic");
+                var result = PaymentsRepository.actuallyMakeTheCharge();
+                if (result == 'Success!') {
+                  print("Payment went through");
+                  print("Camera: take pictures with instructions");
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => InTrip()));
+                } else {
+                  print(result);
+                }
+
               },
               child: Text('Cash and fly!'),
             ),

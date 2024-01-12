@@ -45,7 +45,7 @@ dependencies:
   mapbox_gl: ^0.16.0
   collection: ^1.0.0
   square_in_app_payments: ^1.7.8
-
+  flutter_dotenv: ^5.1.0
 
   location: ^4.0.0
   path_provider: ^2.0.0
@@ -108,3 +108,4 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
   assets:
     - images/
+    - .env

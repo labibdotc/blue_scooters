@@ -6,11 +6,17 @@ import 'package:bluescooters/screens/login_screen.dart';
 import 'package:bluescooters/screens/registration_screen.dart';
 import 'package:bluescooters/screens/product_description.dart';
 import 'package:bluescooters/screens/payment.dart';
+import 'package:bluescooters/screens/InTrip.dart';
 import 'package:bluescooters/screens/stream_experiment.dart';//TODO: remove in production
 import 'package:firebase_core/firebase_core.dart';
 import 'package:camera/camera.dart';
 import 'firebase_options.dart';
 import 'camera_common.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'env.dart';
+
+
+
 
 
 Future<void> main() async {
@@ -26,7 +32,7 @@ Future<void> main() async {
   //   print('Error: $error');
   // })
   // ;
-
+  await loadDotenv();
   Cameras = await availableCameras();
   runApp(FlashChat());
 
@@ -93,7 +99,8 @@ class FlashChat extends StatelessWidget {
         CameraApp.id: (context) => CameraApp(),
         // MyApp.id: (context) => MyApp(),
         MapSample.id: (context) => MapSample(),
-        ChatToDemoStream.id: (context) => ChatToDemoStream()
+        ChatToDemoStream.id: (context) => ChatToDemoStream(),
+        InTrip.id: (context) => InTrip()
       }
     );
   }

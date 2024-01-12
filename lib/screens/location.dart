@@ -1,6 +1,11 @@
+import 'package:bluescooters/payment/PaymentsRepository.dart';
 import 'package:bluescooters/widgets/dragableWidget.dart';
+import 'package:bluescooters/payment/PaymentsRepository.dart';
 import 'package:flutter/material.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
+import 'package:square_in_app_payments/in_app_payments.dart';
+import 'package:square_in_app_payments/models.dart';
+import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:bluescooters/db/get_scooters.dart';
 
@@ -12,7 +17,7 @@ final LatLngBounds sydneyBounds = LatLngBounds(
 );
 
 class MapSample extends StatefulWidget {
-  static const String id = "7";
+  static const String id = "MapSample";
 
   // FIXME: You need to pass in your access token via the command line argument
   // --dart-define=ACCESS_TOKEN=ADD_YOUR_TOKEN_HERE
@@ -91,10 +96,33 @@ class AnimateCamera extends StatefulWidget {
 class AnimateCameraState extends State<AnimateCamera> {
   late MapboxMapController mapController;
   late GlobalKey<DragWidgetState> childKey;
+  Future _setIOSCardEntryTheme() async {
+    var themeConfiguationBuilder = IOSThemeBuilder();
+    themeConfiguationBuilder.saveButtonTitle = 'Pay';
+    themeConfiguationBuilder.errorColor = RGBAColorBuilder()
+      ..r = 255
+      ..g = 0
+      ..b = 0;
+    themeConfiguationBuilder.tintColor = RGBAColorBuilder()
+      ..r = 36
+      ..g = 152
+      ..b = 141;
+    themeConfiguationBuilder.keyboardAppearance = KeyboardAppearance.light;
+    themeConfiguationBuilder.messageColor = RGBAColorBuilder()
+      ..r = 114
+      ..g = 114
+      ..b = 114;
+
+    await InAppPayments.setIOSCardEntryTheme(themeConfiguationBuilder.build());
+  }
+
   @override
   void initState() {
     super.initState();
     childKey = GlobalKey<DragWidgetState>();
+    if (Platform.isIOS) {
+      _setIOSCardEntryTheme();
+    }
   }
   String scooter_station = "Campus Center";
   MyLocationTrackingMode _myLocationTrackingMode = MyLocationTrackingMode.None;
@@ -138,7 +166,64 @@ class AnimateCameraState extends State<AnimateCamera> {
   void updateStationInChild(String newStation) {
     childKey.currentState?.updateStationInChild(newStation);
   }
+  /**
+   * Callback when card entry is cancelled and UI is closed
+   */
+  void _onCancelCardEntryFlow() {
+    // Handle the cancel callback
+    print("cancel called");
+  }
 
+  /**
+   * Callback when the card entry is closed after call 'completeCardEntry'
+   */
+  void _onCardEntryComplete() {
+    // Update UI to notify user that the payment flow is finished successfully
+    print("card entry complete");
+  }
+  /**
+   * Callback when successfully get the card nonce details for processig
+   * card entry is still open and waiting for processing card nonce details
+   */
+  void _onCardEntryCardNonceRequestSuccess(CardDetails result) async {
+
+    try {
+      // take payment with the card nonce details
+      // you can take a charge
+      // await chargeCard(result);
+
+      // payment finished successfully
+      // you must call this method to close card entry
+      // this ONLY apply to startCardEntryFlow, please don't call this method when use startCardEntryFlowWithBuyerVerification
+      print('success!');
+      PaymentsRepository.loadNonce(result.nonce);
+      InAppPayments.completeCardEntry(
+          onCardEntryComplete: _onCardEntryComplete);
+    } on Exception catch (ex) {
+      // payment failed to complete due to error
+      // notify card entry to show processing error
+      print("there is a problem");
+      InAppPayments.showCardNonceProcessingError(ex.toString());
+    }
+  }
+
+  Future<void> _initSquarePayment() async {
+    print("initializing Square payment");
+    await InAppPayments.setSquareApplicationId('sandbox-sq0idb-O4lvBauO1sZhztTGGrAqMw');
+  }
+  /**
+   * An event listener to start card entry flow
+   */
+  Future<void> _onStartCardEntryFlow() async {
+    print("onStart Card Entry Flow");
+    await InAppPayments.startCardEntryFlow(
+        onCardNonceRequestSuccess: _onCardEntryCardNonceRequestSuccess,
+        onCardEntryCancel: _onCancelCardEntryFlow);
+  }
+  _payment() async {
+    await _initSquarePayment();
+    await _onStartCardEntryFlow();
+  }
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -175,6 +260,25 @@ class AnimateCameraState extends State<AnimateCamera> {
               });
             },//start map from tufts where it was founded
           ),
+          Positioned(
+              top: 100,
+              left:20,
+              child: Material(
+                color: Colors.white,
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(30),
+                ),
+                elevation: 5,
+                child: IconButton(
+                  icon: Icon(Icons.credit_card), // You can change this to any icon you want
+                  onPressed: () {
+                    // Add your custom logic here
+                    _payment();
+                  },
+                ),
+              ),
+
+              ),
           Positioned(
             bottom: 200,
             right:20,

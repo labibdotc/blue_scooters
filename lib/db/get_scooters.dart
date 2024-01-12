@@ -43,12 +43,12 @@ class station_scooters extends StatelessWidget {
         builder: (context, snapshot) {
           print(station_name);
           if (snapshot.hasError) {
-            return Container(); // Return nothing
+            return Container(color: Colors.white,); // Return nothing
           }
           // print("line 20");
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Container(); // Return nothing
+            return Container(color: Colors.white); // Return nothing
           }
           // print("line 24");
 
@@ -73,13 +73,13 @@ class station_scooters extends StatelessWidget {
                     future: getSpecificDocument(scooter),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Container(); // Return nothing
+                        return Container(color: Colors.white); // Return nothing
                       } else if (snapshot.hasError) {
-                        return Container(); // Return nothing
+                        return Container(color: Colors.white); // Return nothing
                       } else {
                         var scooter_info = snapshot.data as Map<String,dynamic>;
                         if (scooter_info["owner"] == "" || scooter_info["name"] == "" || scooter_info["image_url"] == "") {
-                          return Container();
+                          return Container(color: Colors.white);
                         }
                         return scooterCard(owner: scooter_info["owner"], name: scooter_info["name"], image: scooter_info["image_url"]);
 
