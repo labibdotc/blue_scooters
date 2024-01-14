@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bluescooters/screens/location.dart';
 import 'dart:async';
+import 'package:bluescooters/widgets/roundedButton.dart';
 
 class InTrip extends StatelessWidget {
   static const String id = "InTrip";
@@ -12,10 +13,9 @@ class InTrip extends StatelessWidget {
           // Return true to allow back navigation, false to prevent it
           return false;
         },
-        child:MaterialApp(
+        child: MaterialApp(
           home: TimerScreen(),
-        )
-    );
+        ));
   }
 }
 
@@ -42,12 +42,13 @@ class _TimerScreenState extends State<TimerScreen> {
       });
     }
   }
+
   String _formatTime(int timeInSeconds) {
     int hours = timeInSeconds ~/ 3600;
     int minutes = (timeInSeconds ~/ 60) % 60;
     int seconds = timeInSeconds % 60;
 
-    return '$hours:${_formatTwoDigits(minutes)}:${_formatTwoDigits(seconds)}';
+    return '${_formatTwoDigits(hours)}:${_formatTwoDigits(minutes)}:${_formatTwoDigits(seconds)}';
   }
 
   String _formatTwoDigits(int value) {
@@ -68,23 +69,101 @@ class _TimerScreenState extends State<TimerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double statusBarHeight = MediaQuery.of(context).padding.top;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Timer App'),
-      ),
-      body: Center(
+      body: Align(
+        alignment: Alignment.center,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
+            SizedBox(
+                height:
+                    statusBarHeight + 28), // Empty space to position the button
+            Container(
+              width: 374, // Set the width of the rectangle
+              height: 48, // Set the height of the rectangle
+              decoration: BoxDecoration(
+                color: Color(0xFFF8E8F8), // Set the color of the rectangle
+                borderRadius: BorderRadius.circular(8), // Set the corner radius
+              ),
+              child: Center(
+                child: Text(
+                  'Make money out of your scooter too', //TODO: make this pumpy for better interactivity and to get more clicks
+                  style: TextStyle(
+                      color: Color(0xFF6938D3), fontWeight: FontWeight.w700),
+                ),
+              ),
+            ),
+            SizedBox(height: 78), // Empty space to position the button
+            Image(
+                image: AssetImage('images/scooterSwoosh.png'),
+                width: 123,
+                height: 50),
+            SizedBox(height: 28),
             Text(
-              'Timer: ${_formatTime(_seconds)}',
+              'In Trip Time',
               style: TextStyle(fontSize: 20),
             ),
-            SizedBox(height: 20),
+            Container(
+              width: 244, // Set the width of the rectangle
+              height: 98, // Set the height of the rectangle
+              decoration: BoxDecoration(
+                color: Color(0xFF6938D3), // Set the color of the rectangle
+                borderRadius:
+                    BorderRadius.circular(40), // Set the corner radius
+              ),
+              child: Center(
+                child: Text(
+                  '${_formatTime(_seconds)}',
+                  style: TextStyle(fontSize: 50, color: Colors.white),
+                ),
+              ),
+            ),
+
+            Padding(
+              padding: EdgeInsets.only(left: 20, right: 20, top: 33),
+              child: SizedBox(
+                width: 374.0, // Set the width of the SizedBox
+                child: Divider(
+                  color: Color(0xFFD9D9D9),
+                  thickness: 1, // Set the thickness of the line
+                ),
+              ),
+            ),
+            SizedBox(height: 9),
+            Text(
+              'Choose return station',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(9.0),
+              child: Container(
+                  height: 320,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Color(0xFFD9D9D9), // Set the border color
+                      width: 1.0, // Set the border width
+                    ),
+                  ),
+                  child: Center(child: Text("Consult owner for stations."))),
+            ),
             ElevatedButton(
-              onPressed: (){
+              onPressed: () {
                 _navigateToHomeScreenWithPopup(context);
               },
+              style: ElevatedButton.styleFrom(
+                primary: Color(0xFF6938D3),
+                minimumSize: Size(366, 56),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0), // Set the desired radius
+                ),                // backgroundColor: MaterialStateProperty.resolveWith<Color?>(
+                //   (Set<MaterialState> states) {
+                //     return const Color(0xFF6938D3);
+                //   },
+                // ),
+              ),
               child: Text('End Trip'),
             ),
           ],
@@ -92,6 +171,7 @@ class _TimerScreenState extends State<TimerScreen> {
       ),
     );
   }
+
   void _navigateToHomeScreenWithPopup(BuildContext context) {
     showDialog(
       context: context,
@@ -113,7 +193,8 @@ class _TimerScreenState extends State<TimerScreen> {
                 Navigator.of(context).pop();
 
                 // Navigate back to the home screen
-                Navigator.popUntil(context, (route) => route.settings.name == MapSample.id);
+                Navigator.popUntil(
+                    context, (route) => route.settings.name == MapSample.id);
               },
               child: Text('Yes'),
             ),

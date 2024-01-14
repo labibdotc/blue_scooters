@@ -58,7 +58,8 @@ class station_scooters extends StatelessWidget {
           // callback(scooters.length); //TODO: to make the scooter length change for display
           return ListView.builder(
               padding: EdgeInsets.zero, // Set padding to zero to remove it completely
-              itemCount: scooters.length,
+              itemCount:  scooters.length,
+              shrinkWrap: true,
               itemBuilder: (context, index) {
                 // Access individual user data
                 var scooter_data = scooters[index].data() as Map<String, dynamic>;
