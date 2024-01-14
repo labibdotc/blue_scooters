@@ -107,7 +107,7 @@ class _scooterCardState extends State<scooterCard> {
                         ),
                         Padding(
                             padding: EdgeInsets.only(top: 6),
-                            child: Text('\$ 0.99 per 30 mins', //Used to be owner
+                            child: Text('\$0.99 per 30 mins', //Used to be owner
                                 style:  TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w700,
