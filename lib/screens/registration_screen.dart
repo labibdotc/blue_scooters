@@ -1,8 +1,10 @@
+import 'package:bluescooters/payment/PaymentsRepository.dart';
 import 'package:bluescooters/screens/chat_screen.dart';
 import 'package:bluescooters/screens/location.dart';
 import 'package:flutter/material.dart';
 import 'package:bluescooters/widgets/roundedButton.dart';
 import 'package:bluescooters/constants.dart';
+import 'package:bluescooters/db/SquareUserData.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'chat_screen.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -19,6 +21,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   bool showSpinner = false;
   String email = '';
   String pass = '';
+  String errorMessage = '';
   @override
   void initState() {
     // TODO: implement initState
@@ -70,19 +73,44 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               const SizedBox(
                 height: 12.0,
               ),
+              (errorMessage.isNotEmpty ?
+              Text(
+                errorMessage,
+                style: TextStyle(color: Colors.red),
+              )
+                  : Container(width: 0,height: 10,)),
+              SizedBox(height: 10),
               RoundedButton(callback: () async {
                 setState(() {
                   showSpinner = true;
+                  errorMessage = '';
                 });
-                debugPrint(_auth.toString());
                 try {
                   final newUser = await _auth.createUserWithEmailAndPassword(
                       email: email, password: pass);
-                  if(newUser != null) {
-                    Navigator.pushNamed(context, MapSample.id);
+                  if(newUser == null) {
+                    throw Exception("Email address already registered.");
                   }
-                } catch(e) {
-                    debugPrint(e.toString());
+
+                  var idInSquare = await PaymentsRepository.createSquareUser(email);
+                  await SquareUserData.postToCollection('users', email, {'square_id': idInSquare});
+                  print('Document posted successfully.');
+
+                  Navigator.pushNamed(context, MapSample.id);
+                } on FirebaseAuthException catch (e) {
+                  if (e.code == 'weak-password') {
+                    setState(() {
+                      errorMessage = 'The password provided is too weak.';
+                    });
+                  } else if (e.code == 'email-already-in-use') {
+                    setState(() {
+                      errorMessage = 'The account already exists for that email.';
+                    });
+                  }
+                } catch (e) {
+                  setState(() {
+                    errorMessage = e.toString();
+                  });
                 }
                 setState(() {
                   showSpinner = false;

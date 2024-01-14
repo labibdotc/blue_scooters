@@ -20,12 +20,14 @@ class _LoginScreenState extends State<LoginScreen> {
   bool showSpinner = false;
   String pass ='';
   String email = '';
+  String errorMessage = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: ModalProgressHUD(
         inAsyncCall: showSpinner,
+        color: Colors.transparent, // Set a transparent color
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: ListView(
@@ -61,11 +63,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 decoration: KUserInputDecoration.copyWith(hintText:'Enter your password' )
               ),
               const SizedBox(
-                height: 24.0,
+                height: 12.0,
               ),
+              (errorMessage.isNotEmpty ?
+              Text(
+                errorMessage,
+                style: TextStyle(color: Colors.red),
+              )
+                  : Container(width: 0,height: 10,)),
+              SizedBox(height: 10),
               RoundedButton(callback: () async{
                 setState(() {
                   showSpinner = true;
+                  errorMessage = '';
                 });
                 try {
                   final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -77,10 +87,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   }
                 } on FirebaseAuthException catch (e) {
                   if (e.code == 'user-not-found') {
-                    print('No user found for that email.');
+                    setState(() {
+                      errorMessage = 'No user found for that email.';
+                    });
                   } else if (e.code == 'wrong-password') {
-                    print('Wrong password provided for that user.');
+                    setState(() {
+                      errorMessage = 'Wrong password provided for that user.';
+                    });
                   }
+                } on Exception catch (e) {
+                  setState(() {
+                    errorMessage = e.toString();
+                  });
                 }
                 setState(() {
                   showSpinner = false;

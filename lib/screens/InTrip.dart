@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:bluescooters/screens/TripEnded.dart';
+import 'package:bluescooters/screens/location.dart';
 import 'dart:async';
 
 class InTrip extends StatelessWidget {
@@ -113,7 +113,7 @@ class _TimerScreenState extends State<TimerScreen> {
                 Navigator.of(context).pop();
 
                 // Navigate back to the home screen
-                Navigator.popUntil(context, (route) => route.isFirst);
+                Navigator.popUntil(context, (route) => route.settings.name == MapSample.id);
               },
               child: Text('Yes'),
             ),

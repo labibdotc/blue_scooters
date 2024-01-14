@@ -1,3 +1,4 @@
+import 'package:bluescooters/db/SquareUserData.dart';
 import 'package:bluescooters/payment/PaymentsRepository.dart';
 import 'package:bluescooters/widgets/dragableWidget.dart';
 import 'package:bluescooters/payment/PaymentsRepository.dart';
@@ -8,6 +9,7 @@ import 'package:square_in_app_payments/models.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:bluescooters/db/get_scooters.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 
 
@@ -181,6 +183,7 @@ class AnimateCameraState extends State<AnimateCamera> {
     // Update UI to notify user that the payment flow is finished successfully
     print("card entry complete");
   }
+
   /**
    * Callback when successfully get the card nonce details for processig
    * card entry is still open and waiting for processing card nonce details
@@ -195,8 +198,15 @@ class AnimateCameraState extends State<AnimateCamera> {
       // payment finished successfully
       // you must call this method to close card entry
       // this ONLY apply to startCardEntryFlow, please don't call this method when use startCardEntryFlowWithBuyerVerification
-      print('success!');
-      PaymentsRepository.loadNonce(result.nonce);
+      String? user_id;
+      final user = FirebaseAuth.instance.currentUser!;
+      if (user == null) {
+        throw Exception("user is nil!");
+      } else {
+        user_id = user?.email;
+      }
+      var userInSquare = await SquareUserData.getUserSquareID(user_id);
+      await PaymentsRepository.loadNonce(result.nonce, userInSquare);
       InAppPayments.completeCardEntry(
           onCardEntryComplete: _onCardEntryComplete);
     } on Exception catch (ex) {

@@ -2,23 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bluescooters/widgets/roundedButton.dart';
+import 'package:bluescooters/screens/InTrip.dart';
+import 'package:bluescooters/payment/PaymentsRepository.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:bluescooters/screens/camera.dart';
 import 'package:bluescooters/screens/payment.dart';
 final firestore = FirebaseFirestore.instance;
 User? loggedInUser;
 
 class ProductDescription extends StatefulWidget {
-  static const String id = '4';
+  static const String id = 'ProductDescription';
   final String scooter_id;
   final String scooter_owner;
+  final double payment_amount;
 
-  ProductDescription({required this.scooter_id, required this.scooter_owner});
+  ProductDescription({required this.scooter_id, required this.scooter_owner, required this.payment_amount});
   @override
   _ProductDescriptionState createState() => _ProductDescriptionState();
 }
 
 class _ProductDescriptionState extends State<ProductDescription> {
   final _auth = FirebaseAuth.instance;
+
   void getCurrentUser() async {
     try {
       final user = _auth.currentUser!;
@@ -32,6 +37,8 @@ class _ProductDescriptionState extends State<ProductDescription> {
   }
   late String scooter_id;
   late String scooter_owner;
+  late double payment_amount;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -39,6 +46,7 @@ class _ProductDescriptionState extends State<ProductDescription> {
     getCurrentUser();
     scooter_id = widget.scooter_id;
     scooter_owner = widget.scooter_owner;
+    payment_amount = widget.payment_amount;
   }
 
   Future<Map<String, dynamic>> getSpecificDocument(String documentId) async {
@@ -71,6 +79,8 @@ class _ProductDescriptionState extends State<ProductDescription> {
       return {};
     }
   }
+  String errorMessage = ''; // Track the error message state
+  bool showSpinner = false;
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -88,173 +98,202 @@ class _ProductDescriptionState extends State<ProductDescription> {
             print(scooter_info);
             return Scaffold(
               backgroundColor: Colors.white,
-              body: CustomScrollView(
-                slivers: [
-                  SliverAppBar(
-                    expandedHeight: 200.0,
-                    pinned: true,
-                    flexibleSpace: FlexibleSpaceBar(
-                      background: Image.asset(
-                        'images/productDescription.png',
-                        fit: BoxFit.cover,
+              body: ModalProgressHUD(
+                inAsyncCall: showSpinner,
+                color: Colors.transparent, // Set a transparent color
+                child: CustomScrollView(
+                  slivers: [
+                    SliverAppBar(
+                      expandedHeight: 200.0,
+                      pinned: true,
+                      flexibleSpace: FlexibleSpaceBar(
+                        background: Image.asset(
+                          'images/productDescription.png',
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.only(top: 28, left: 17.0),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                Container(
-                                  width: 22,
-                                  height: 22,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Color(0xFFEEF9E6),
-                                  ),
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.check,
-                                      color: Color(0xFF6938D3),
-                                      size: 15,
+                    SliverToBoxAdapter(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.only(top: 28, left: 17.0),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Container(
+                                    width: 22,
+                                    height: 22,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Color(0xFFEEF9E6),
+                                    ),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.check,
+                                        color: Color(0xFF6938D3),
+                                        size: 15,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                Text(
-                                  "Available to ride!",
-                                  style: TextStyle(color: Color(0xFF6938D3)),
-                                ),
-                              ]),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 32.0, top: 27),
-                          child: Text(scooter_id,
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.w700)),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 10, left: 17.0),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                Tag(text: "${scooter_info["speed"]} MPH+"), //
-                                Tag(text: "${scooter_info["charged_miles"]} miles ride or less"),
-                                // Tag(text: "< 1 mile radius"), //TODO: decide if this should be removed
-                              ]),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 18.0, top: 26),
-                          child: Text("Description",
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w700)),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 20.0, top: 4),
-                          child: Text("From ${scooter_owner}",
-                              style: TextStyle(
-                                  color: Color(0xFF8C8C8C),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500)),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 20.0, top: 10),
-                          child: Text(
-                              scooter_info["description"],
-                              style: TextStyle(
-                                  color: Color(0xFF151515),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400)),
-                        ),
-                        Padding(
-                          padding:
-                          EdgeInsets.only(left: 20, right: 20, top: 90, bottom: 27),
-                          child: SizedBox(
-                            width: 374.0, // Set the width of the SizedBox
-                            child: Divider(
-                              color: Color(0xFFD9D9D9),
-                              thickness: 1, // Set the thickness of the line
+                                  Text(
+                                    "Available to ride!",
+                                    style: TextStyle(color: Color(0xFF6938D3)),
+                                  ),
+                                ]),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 32.0, top: 27),
+                            child: Text(scooter_id,
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w700)),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 10, left: 17.0),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Tag(text: "${scooter_info["speed"]} MPH+"), //
+                                  Tag(text: "${scooter_info["charged_miles"]} miles ride or less"),
+                                  // Tag(text: "< 1 mile radius"), //TODO: decide if this should be removed
+                                ]),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.only(left: 18.0, top: 26),
+                            child: Text("Description",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w700)),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 20.0, top: 4),
+                            child: Text("From ${scooter_owner}",
+                                style: TextStyle(
+                                    color: Color(0xFF8C8C8C),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500)),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 20.0, top: 10),
+                            child: Text(
+                                scooter_info["description"],
+                                style: TextStyle(
+                                    color: Color(0xFF151515),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400)),
+                          ),
+                          Padding(
+                            padding:
+                            EdgeInsets.only(left: 20, right: 20, top: 90, bottom: 27),
+                            child: SizedBox(
+                              width: 374.0, // Set the width of the SizedBox
+                              child: Divider(
+                                color: Color(0xFFD9D9D9),
+                                thickness: 1, // Set the thickness of the line
+                              ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 26),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              FeatureCard(
-                                featureKey: "Brand",
-                                value: scooter_info["brand"],
-                                featureImagePath: 'images/brand.png',
-                              ),
-                              FeatureCard(
-                                featureKey: "Speed",
-                                value: "${scooter_info["speed"]} mph",
-                                featureImagePath: 'images/Speed icon.png',
-                              ),
-                            ],
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 26),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                FeatureCard(
+                                  featureKey: "Brand",
+                                  value: scooter_info["brand"],
+                                  featureImagePath: 'images/brand.png',
+                                ),
+                                FeatureCard(
+                                  featureKey: "Speed",
+                                  value: "${scooter_info["speed"]} mph",
+                                  featureImagePath: 'images/Speed icon.png',
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 26),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              FeatureCard(
-                                featureKey: "Light",
-                                value: (scooter_info["headlight"]? "Yes": "No"),
-                                featureImagePath: 'images/syn.png',
-                              ),
-                              FeatureCard(
-                                featureKey: "Condition",
-                                value: scooter_info["condition"],
-                                featureImagePath: 'images/condition.png',
-                              ),
-                            ],
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 26),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                FeatureCard(
+                                  featureKey: "Light",
+                                  value: (scooter_info["headlight"]? "Yes": "No"),
+                                  featureImagePath: 'images/syn.png',
+                                ),
+                                FeatureCard(
+                                  featureKey: "Condition",
+                                  value: scooter_info["condition"],
+                                  featureImagePath: 'images/condition.png',
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        RoundedButton(
-                            callback: () async {
-                              // Navigator.pushNamed(context, CameraApp.id);
-                                Navigator.pushNamed(context, Payment.id,
-                                    arguments: {
-                                      "payment_amount": 1,
-                                      "rider_id": "10",
-                                      "owner_id": "01"
-                                    }
-                                );
-                            },
-                            color: Color(0xFF6938D3),
-                            text: 'Book a Ride!'),
-                      // InkWell(
-                      //   onTap: () {
-                      //     // Handle button press
-                      //     // print('Button pressed!'); //TODO: remove in production
-                      //     Navigator.pushNamed(context, Payment.id,
-                      //         arguments: {
-                      //           "payment_amount": 1,
-                      //           "rider_id": "10",
-                      //           "owner_id": "01"
-                      //         }
-                      //     );
-                      //   },
-                      //   child: Text('Book a Ride!', style: TextStyle(color: Color(0xFF6938D3)),)
-                      // )
+                          (errorMessage.isNotEmpty ?
+                          Text(
+                            errorMessage,
+                            style: TextStyle(color: Colors.red),
+                          )
+                              : Container(width: 0,height: 10,)),
+                          RoundedButton(
+                              callback: () async {
+                                //TODO: maybe show a screen in the middle to confirm payment
+                                //   Navigator.pushNamed(context, Payment.id,
+                                //       arguments: {
+                                //         "payment_amount": 1.06,
+                                //         "owner_id": scooter_owner,
+                                //         "scooter_id": scooter_id
+                                //       }
+                                //   );
+                                setState(() {
+                                  errorMessage = ''; // Set the error message
+                                  showSpinner = true;
+                                });
+                                print("Processing payment logic");
+                                var result = await PaymentsRepository.actuallyMakeTheCharge(scooter_id, scooter_owner, payment_amount);
+                                if (result == 'Success!') {
+
+                                  print("Payment went through");
+                                  print("Camera: take pictures with instructions");
+                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => InTrip()));
+                                } else {
+                                  setState(() {
+                                    errorMessage = result; // Set the error message
+                                  });
+                                }
+                                setState(() {
+                                  showSpinner = false;// Set the error message
+                                });
+                              },
+                              color: Color(0xFF6938D3),
+                              text: 'Start a Ride!'),
+                        // InkWell(
+                        //   onTap: () {
+                        //     // Handle button press
+                        //     // print('Button pressed!'); //TODO: remove in production
+                        //     Navigator.pushNamed(context, Payment.id,
+                        //         arguments: {
+                        //           "payment_amount": 1,
+                        //           "rider_id": "10",
+                        //           "owner_id": "01"
+                        //         }
+                        //     );
+                        //   },
+                        //   child: Text('Book a Ride!', style: TextStyle(color: Color(0xFF6938D3)),)
+                        // )
 
 
 
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
 

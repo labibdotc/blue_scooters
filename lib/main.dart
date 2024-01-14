@@ -58,12 +58,13 @@ class FlashChat extends StatelessWidget {
             settings.arguments as Map<String, dynamic>;
 
             // Check if the required parameter is present
-            if (arguments.containsKey('scooter_id') && arguments.containsKey('scooter_owner')) {
+            if (arguments.containsKey('scooter_id') && arguments.containsKey('scooter_owner') && arguments.containsKey('payment_amount')) {
               // Return MaterialPageRoute with the ProductDescription widget
               return MaterialPageRoute(
                 builder: (context) => ProductDescription(
                   scooter_id: arguments['scooter_id'],
                   scooter_owner: arguments['scooter_owner'],
+                  payment_amount: arguments['payment_amount'],
                 ),
               );
             }
@@ -75,13 +76,13 @@ class FlashChat extends StatelessWidget {
             settings.arguments as Map<String, dynamic>;
 
             // Check if the required parameter is present
-            if (arguments.containsKey('owner_id') && arguments.containsKey('payment_amount') && arguments.containsKey('rider_id')) {
+            if (arguments.containsKey('owner_id') && arguments.containsKey('payment_amount') && arguments.containsKey('scooter_id')) {
               // Return MaterialPageRoute with the ProductDescription widget
               return MaterialPageRoute(
                 builder: (context) => Payment(
                   payment_amount: arguments['payment_amount'],
                   owner_id: arguments['owner_id'],
-                  rider_id: arguments['rider_id'],
+                    scooter_id:arguments['scooter_id']
                 ),
               );
             }

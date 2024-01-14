@@ -8,16 +8,17 @@ import 'dart:io';
 
 class Payment extends StatefulWidget {
   static const String id = '11';
-  final int payment_amount;
+  final double payment_amount;
   final String owner_id;
-  final String rider_id;
+  final String scooter_id;
 
-  Payment({required this.payment_amount, required this.owner_id, required this.rider_id});
+  Payment({required this.payment_amount, required this.owner_id,  required this.scooter_id});
   @override
   _PaymentState createState() => _PaymentState();
 }
 
 class _PaymentState extends State<Payment>{
+  String errorMessage = ''; // Track the error message state
 
   Future _setIOSCardEntryTheme() async {
     var themeConfiguationBuilder = IOSThemeBuilder();
@@ -83,21 +84,34 @@ class _PaymentState extends State<Payment>{
               style: TextStyle(fontSize: 16, color: Colors.black),
             ),
             SizedBox(height: 20),
+            (errorMessage.isNotEmpty ?
+            Text(
+              errorMessage,
+              style: TextStyle(color: Colors.red),
+            )
+                : Container(width: 0,height: 10,)),
+            SizedBox(height: 10),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 // Trigger the card entry flow when the button is pressed
                 print("Processing payment logic");
-                var result = PaymentsRepository.actuallyMakeTheCharge();
+                var result = await PaymentsRepository.actuallyMakeTheCharge(widget.scooter_id, widget.owner_id, widget.payment_amount);
                 if (result == 'Success!') {
+                  setState(() {
+                    errorMessage = ''; // Set the error message
+                  });
                   print("Payment went through");
                   print("Camera: take pictures with instructions");
                   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => InTrip()));
                 } else {
-                  print(result);
+                  setState(() {
+                    errorMessage = result; // Set the error message
+                  });
                 }
 
               },
-              child: Text('Cash and fly!'),
+              child:
+                  Text('Cash and fly!'),
             ),
           ],
         ),
