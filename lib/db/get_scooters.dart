@@ -82,7 +82,7 @@ class station_scooters extends StatelessWidget {
                         if (scooter_info["owner"] == "" || scooter_info["name"] == "" || scooter_info["image_url"] == "") {
                           return Container(color: Colors.white);
                         }
-                        return scooterCard(owner: scooter_info["owner"], name: scooter_info["name"], image: scooter_info["image_url"]);
+                        return stationCard(owner: scooter_info["owner"], name: scooter_info["name"], image: scooter_info["image_url"]);
 
 
                       }

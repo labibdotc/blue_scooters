@@ -92,7 +92,7 @@ class FlashChat extends StatelessWidget {
           // For example, return a MaterialPageRoute for a default page
           return MaterialPageRoute(builder: (context) => Container(color: Colors.white));
         },
-      initialRoute: WelcomeScreen.id,
+      initialRoute: InTrip.id,
       routes:{
         WelcomeScreen.id: (context) => WelcomeScreen(),
         LoginScreen.id: (context) => LoginScreen(),
@@ -101,7 +101,8 @@ class FlashChat extends StatelessWidget {
         // MyApp.id: (context) => MyApp(),
         MapSample.id: (context) => MapSample(),
         ChatToDemoStream.id: (context) => ChatToDemoStream(),
-        InTrip.id: (context) => InTrip()
+        InTrip.id: (context) => InTrip(),
+
       }
     );
   }

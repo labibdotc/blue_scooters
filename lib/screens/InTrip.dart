@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bluescooters/screens/location.dart';
 import 'dart:async';
-import 'package:bluescooters/widgets/roundedButton.dart';
+import 'package:bluescooters/widgets/station_card.dart';
 
 class InTrip extends StatelessWidget {
   static const String id = "InTrip";
@@ -66,7 +66,13 @@ class _TimerScreenState extends State<TimerScreen> {
     _timer.cancel();
     super.dispose();
   }
+  int selectedCardIndex = 0;
 
+  void onCardPressed(int index) {
+    setState(() {
+      selectedCardIndex = index;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     double statusBarHeight = MediaQuery.of(context).padding.top;
@@ -140,14 +146,28 @@ class _TimerScreenState extends State<TimerScreen> {
             Padding(
               padding: const EdgeInsets.all(9.0),
               child: Container(
-                  height: 320,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Color(0xFFD9D9D9), // Set the border color
-                      width: 1.0, // Set the border width
+                height: 320,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Color(0xFFD9D9D9),
+                    width: 1.0,
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: List.generate(
+                      10,
+                          (index) => stationCard(
+                        name: "Carm",
+                        image: "images/scooter_prev_ui.png",
+                        isSelected: (index == selectedCardIndex),
+                        onPressed: () => onCardPressed(index),
+                      ),
                     ),
                   ),
-                  child: Center(child: Text("Consult owner for stations."))),
+                ),
+              ),
             ),
             ElevatedButton(
               onPressed: () {

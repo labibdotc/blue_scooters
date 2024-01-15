@@ -2,8 +2,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:bluescooters/screens/product_description.dart';
 //scooter representation in the dragable menu
-class scooterCard extends StatefulWidget {
-  scooterCard(
+class stationCard extends StatefulWidget {
+  stationCard(
       {required this.owner,
         required this.name,
         required this.image});
@@ -11,9 +11,9 @@ class scooterCard extends StatefulWidget {
   final String name;
   final String image;
   @override
-  State<scooterCard> createState() => _scooterCardState();
+  State<stationCard> createState() => _stationCardState();
 }
-class _scooterCardState extends State<scooterCard> {
+class _stationCardState extends State<stationCard> {
   late String owner;
   late String name;
   late String image;
