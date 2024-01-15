@@ -110,7 +110,7 @@ class _scooterCardState extends State<scooterCard> {
                             child: Text('\$0.99 per 30 mins', //Used to be owner
                                 style:  TextStyle(
                                     fontSize: 14,
-                                    fontWeight: FontWeight.w700,
+                                    fontWeight: FontWeight.w100,
                                     color: isButtonPressed ? Colors.white: Color(0xFF4B8364)))),
 
                       ],
