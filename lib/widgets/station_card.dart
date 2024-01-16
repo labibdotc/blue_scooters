@@ -64,7 +64,7 @@ class _stationCardState extends State<stationCard> {
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -75,7 +75,7 @@ class _stationCardState extends State<stationCard> {
                       child: Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 11),
-                          child:  Icon(Icons.location_on, color: widget.isSelected ? Colors.white: Colors.black)
+                          child:  Icon(Icons.location_on, color: widget.isSelected ? Colors.white: Color(0xFF6938D3))
                               // icon: ,
                               // width: 60,
                               // height: 60)),
@@ -84,7 +84,7 @@ class _stationCardState extends State<stationCard> {
                       child: Text(name,
                           style:  TextStyle(
                               fontSize: 18,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w100,
                               color: widget.isSelected ? Colors.white: Colors.black)),
                     )
                   ],

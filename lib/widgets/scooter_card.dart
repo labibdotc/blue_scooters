@@ -6,10 +6,12 @@ class stationCard extends StatefulWidget {
   stationCard(
       {required this.owner,
         required this.name,
-        required this.image});
+        required this.image,
+      required this.leaveStation});
   final String owner;
   final String name;
   final String image;
+  final Future<void> Function(String scooter_id) leaveStation;
   @override
   State<stationCard> createState() => _stationCardState();
 }
@@ -44,7 +46,8 @@ class _stationCardState extends State<stationCard> {
                 arguments: {
                 'scooter_id': name,
                   'scooter_owner': owner,
-                  'payment_amount': 1.06
+                  'payment_amount': 1.06,
+                  'leaveStation': widget.leaveStation
                 },
               );
             },

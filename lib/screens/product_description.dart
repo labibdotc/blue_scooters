@@ -5,6 +5,8 @@ import 'package:bluescooters/widgets/roundedButton.dart';
 import 'package:bluescooters/screens/InTrip.dart';
 import 'package:bluescooters/payment/PaymentsRepository.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:bluescooters/screens/location.dart';
+
 import 'package:bluescooters/screens/camera.dart';
 import 'package:bluescooters/screens/payment.dart';
 final firestore = FirebaseFirestore.instance;
@@ -15,8 +17,9 @@ class ProductDescription extends StatefulWidget {
   final String scooter_id;
   final String scooter_owner;
   final double payment_amount;
+  final Future<void> Function(String scooter_id) leaveStation;
 
-  ProductDescription({required this.scooter_id, required this.scooter_owner, required this.payment_amount});
+  ProductDescription({required this.scooter_id, required this.scooter_owner, required this.payment_amount, required this.leaveStation});
   @override
   _ProductDescriptionState createState() => _ProductDescriptionState();
 }
@@ -254,18 +257,26 @@ class _ProductDescriptionState extends State<ProductDescription> {
                                   errorMessage = ''; // Set the error message
                                   showSpinner = true;
                                 });
-                                print("Processing payment logic");
-                                var result = await PaymentsRepository.actuallyMakeTheCharge(scooter_id, scooter_owner, payment_amount);
-                                if (result == 'Success!') {
+                                try {
+                                  await widget.leaveStation(scooter_id); //this is what raises
+                                  print("Processing payment logic");
+                                  var result = await PaymentsRepository.actuallyMakeTheCharge(scooter_id, scooter_owner, payment_amount);
+                                  if (result == 'Success!') {
 
-                                  print("Payment went through");
-                                  print("Camera: take pictures with instructions");
-                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => InTrip()));
-                                } else {
-                                  setState(() {
-                                    errorMessage = result; // Set the error message
-                                  });
+                                    print("Payment went through");
+                                    print("Camera: take pictures with instructions");
+                                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => InTrip(scooter_id: scooter_id)));
+
+
+                                  } else {
+                                    setState(() {
+                                      errorMessage = result; // Set the error message
+                                    });
+                                  }
+                                } catch(e) {
+                                  _navigateToHomeScreenWithPopup(context, e.toString());
                                 }
+
                                 setState(() {
                                   showSpinner = false;// Set the error message
                                 });
@@ -305,6 +316,47 @@ class _ProductDescriptionState extends State<ProductDescription> {
     );
 
   }
+  void _navigateToHomeScreenWithPopup(BuildContext context, String errorMsg) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0), // Adjust the radius as needed
+          ),
+          title: Text('Scooter unavailable now', style:TextStyle(fontWeight: FontWeight.w700, color: Colors.black)),
+          content: Text(errorMsg, style:TextStyle(fontWeight: FontWeight.w100, color: Colors.black)),
+          actions: <Widget>[
+            ButtonBar(
+                alignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 150.0,
+                    child: TextButton(
+                      onPressed: () {
+                        // Close the dialog
+                        Navigator.of(context).pop();
+
+                        // Navigate back to the home screen
+                        Navigator.popUntil(
+                            context, (route) => route.settings.name == MapSample.id);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0), // Adjust the radius as needed
+                        ),
+                        padding: EdgeInsets.all(16.0), // Set the border color
+                        primary: Colors.blue, // Set the background color
+                        onPrimary: Colors.white, // Set the color of the corners to blue
+                      ),
+                      child: Text('Ok', style: TextStyle(color:Colors.white),),
+                    ),
+                  ),
+                ])],
+        );
+      },
+    );
+  }
 }
 
 class Tag extends StatelessWidget {
@@ -332,6 +384,7 @@ class Tag extends StatelessWidget {
       ),
     );
   }
+
 }
 
 class FeatureCard extends StatelessWidget {
@@ -391,4 +444,5 @@ class FeatureCard extends StatelessWidget {
       ),
     );
   }
+
 }

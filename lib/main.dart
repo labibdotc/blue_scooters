@@ -58,13 +58,29 @@ class FlashChat extends StatelessWidget {
             settings.arguments as Map<String, dynamic>;
 
             // Check if the required parameter is present
-            if (arguments.containsKey('scooter_id') && arguments.containsKey('scooter_owner') && arguments.containsKey('payment_amount')) {
+            if (arguments.containsKey('scooter_id') && arguments.containsKey('scooter_owner') && arguments.containsKey('payment_amount')&& arguments.containsKey('leaveStation')) {
               // Return MaterialPageRoute with the ProductDescription widget
               return MaterialPageRoute(
                 builder: (context) => ProductDescription(
                   scooter_id: arguments['scooter_id'],
                   scooter_owner: arguments['scooter_owner'],
                   payment_amount: arguments['payment_amount'],
+                  leaveStation: arguments['leaveStation'],
+                ),
+              );
+            }
+          }
+          if (settings.name == InTrip.id) {
+            // Extract arguments from settings
+            Map<String, dynamic> arguments =
+            settings.arguments as Map<String, dynamic>;
+
+            // Check if the required parameter is present
+            if (arguments.containsKey('scooter_id')) {
+              // Return MaterialPageRoute with the ProductDescription widget
+              return MaterialPageRoute(
+                builder: (context) => InTrip(
+                  scooter_id: arguments['scooter_id'],
                 ),
               );
             }
@@ -92,7 +108,7 @@ class FlashChat extends StatelessWidget {
           // For example, return a MaterialPageRoute for a default page
           return MaterialPageRoute(builder: (context) => Container(color: Colors.white));
         },
-      initialRoute: InTrip.id,
+      initialRoute: WelcomeScreen.id,
       routes:{
         WelcomeScreen.id: (context) => WelcomeScreen(),
         LoginScreen.id: (context) => LoginScreen(),
@@ -101,7 +117,6 @@ class FlashChat extends StatelessWidget {
         // MyApp.id: (context) => MyApp(),
         MapSample.id: (context) => MapSample(),
         ChatToDemoStream.id: (context) => ChatToDemoStream(),
-        InTrip.id: (context) => InTrip(),
 
       }
     );

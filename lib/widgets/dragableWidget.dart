@@ -101,7 +101,7 @@ class DragWidgetState extends State<DragWidget> {
                     //TODO: change these hardcoded values
                     //TODO: potential overflow, but for now restricts the bouncing when dragged
                     padding: EdgeInsets.zero,
-                    child: station_scooters(callback: newScooterCallback, station_name: location.replaceAll(' ', '_'),),
+                    child: station_scooters(callback: newScooterCallback, formatted_station_name: station_scooters.formatStationNameInDb(location),),
                   )
                   // ... more scooterInfos
                 ],

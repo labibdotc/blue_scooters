@@ -5,10 +5,74 @@ import 'package:bluescooters/widgets/scooter_card.dart';
 
 class station_scooters extends StatelessWidget {
   final Function(int) callback;
-   String station_name;
-
+  final String formatted_station_name;
+  static String formatStationNameInDb(String station) {
+    return station.replaceAll(' ', '_');
+  }
   station_scooters(
-      {required this.callback, required this.station_name});
+      {required this.callback, required this.formatted_station_name});
+  Future<void> leaveStation(String scooter_id) async {
+    // Use the 'scooters' collection and the provided documentId
+    var originalDocumentReference = FirebaseFirestore.instance.collection("stations").doc(formatted_station_name).collection("scooters").doc(scooter_id);
+
+    // Retrieve the document
+    var documentSnapshot = await originalDocumentReference.get();
+
+    // Check if the document exists
+    if (documentSnapshot.exists) {
+      // Delete the document from the original collection
+      await originalDocumentReference.delete();
+
+      // Access the data from the document
+      Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
+
+
+      // Use another collection reference (e.g., 'archived_scooters') to store a copy
+      var inTripScootersReference = FirebaseFirestore.instance.collection('inTrip');
+
+
+      //Can produce data rac
+      await inTripScootersReference.doc(scooter_id).set(data);
+
+
+      print('scooter released from station and is now in trip.');
+    } else {
+      throw Exception("Chosen scooter is no more available");
+    }
+  }
+  static void return_to_station(String station_name, String scooter_id) async {
+    // Use the 'scooters' collection and the provided documentId
+    var originalDocumentReference = FirebaseFirestore.instance.collection('inTrip').doc(scooter_id);
+
+    // Retrieve the document
+    var documentSnapshot = await originalDocumentReference.get();
+
+    // Check if the document exists
+    if (documentSnapshot.exists) {
+      // Delete the document from the original collection
+      await originalDocumentReference.delete();
+      // Access the data from the document
+      Map<String, dynamic> data = documentSnapshot.data() as Map<String, dynamic>;
+
+      // Use another collection reference (e.g., 'archived_scooters') to store a copy
+      var newStationScootersReference = FirebaseFirestore.instance.collection("stations").doc(station_name).collection("scooters");
+
+
+      //Can produce data rac
+      await newStationScootersReference.doc(scooter_id).set(data);
+
+
+
+      print('scooter released return to => ' + station_name);
+    } else {
+      // Document doesn't exist
+      print('Document does not exist');
+    }
+    await Future.delayed(Duration(seconds: 3), () {
+      print("left: "+ station_name);
+    });
+
+  }
   static String id = "10";
   Future<Map<String, dynamic>> getSpecificDocument(String documentId) async {
     try {
@@ -39,9 +103,9 @@ class station_scooters extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('stations').doc(station_name).collection("scooters").snapshots(),
+        stream: FirebaseFirestore.instance.collection('stations').doc(formatted_station_name).collection("scooters").snapshots(),
         builder: (context, snapshot) {
-          print(station_name);
+          print(formatted_station_name);
           if (snapshot.hasError) {
             return Container(color: Colors.white,); // Return nothing
           }
@@ -82,7 +146,7 @@ class station_scooters extends StatelessWidget {
                         if (scooter_info["owner"] == "" || scooter_info["name"] == "" || scooter_info["image_url"] == "") {
                           return Container(color: Colors.white);
                         }
-                        return stationCard(owner: scooter_info["owner"], name: scooter_info["name"], image: scooter_info["image_url"]);
+                        return stationCard(owner: scooter_info["owner"], name: scooter_info["name"], image: scooter_info["image_url"], leaveStation: leaveStation);
 
 
                       }

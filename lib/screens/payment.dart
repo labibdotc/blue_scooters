@@ -102,7 +102,7 @@ class _PaymentState extends State<Payment>{
                   });
                   print("Payment went through");
                   print("Camera: take pictures with instructions");
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => InTrip()));
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => InTrip(scooter_id: "hehe",)));
                 } else {
                   setState(() {
                     errorMessage = result; // Set the error message

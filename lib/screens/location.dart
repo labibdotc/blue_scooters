@@ -301,15 +301,15 @@ class AnimateCameraState extends State<AnimateCamera> {
         left: 20,
         child: RawMaterialButton(
           child: Icon(Icons.credit_card),
-          fillColor: Colors.white, // You can change this to any icon you want
-          onPressed: () async {
+          fillColor: !cardEntered ? Colors.white : Colors.grey, // You can change this to any icon you want
+          onPressed: !cardEntered ? () async {
             // Add your custom logic here
             setState(() {
               cardEntered = true;
             });
             _payment();
             //check if there is a card now in square if not
-          },
+          } : null,
           elevation: 5,
           padding: EdgeInsets.all(15.0),
           // tooltip: 'This is a tooltip for guidance',

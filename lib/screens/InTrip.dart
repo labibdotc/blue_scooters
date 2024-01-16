@@ -1,10 +1,14 @@
+import 'package:bluescooters/db/scooter_stations.dart';
 import 'package:flutter/material.dart';
 import 'package:bluescooters/screens/location.dart';
 import 'dart:async';
 import 'package:bluescooters/widgets/station_card.dart';
-
+import 'package:bluescooters/db/get_scooters.dart';
+import 'package:bluescooters/db/scooter_stations.dart';
 class InTrip extends StatelessWidget {
   static const String id = "InTrip";
+  final String scooter_id;
+  InTrip({required this.scooter_id});
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -14,12 +18,14 @@ class InTrip extends StatelessWidget {
           return false;
         },
         child: MaterialApp(
-          home: TimerScreen(),
+          home: TimerScreen(scooter_id: scooter_id),
         ));
   }
 }
 
 class TimerScreen extends StatefulWidget {
+  final String scooter_id;
+  TimerScreen({required this.scooter_id});
   @override
   _TimerScreenState createState() => _TimerScreenState();
 }
@@ -33,6 +39,11 @@ class _TimerScreenState extends State<TimerScreen> {
   void initState() {
     super.initState();
     _timer = Timer.periodic(Duration(seconds: 1), _updateTimer);
+    scooterStations.getPermittedStations(widget.scooter_id).then((list) {
+      setState(() {
+        returnStations = list;
+      });
+    });
   }
 
   void _updateTimer(Timer timer) {
@@ -73,6 +84,7 @@ class _TimerScreenState extends State<TimerScreen> {
       selectedCardIndex = index;
     });
   }
+  List<String>returnStations = [];
   @override
   Widget build(BuildContext context) {
     double statusBarHeight = MediaQuery.of(context).padding.top;
@@ -127,15 +139,11 @@ class _TimerScreenState extends State<TimerScreen> {
                 ),
               ),
             ),
-
             Padding(
               padding: EdgeInsets.only(left: 20, right: 20, top: 33),
               child: SizedBox(
                 width: 374.0, // Set the width of the SizedBox
-                child: Divider(
-                  color: Color(0xFFD9D9D9),
-                  thickness: 1, // Set the thickness of the line
-                ),
+                child: Container(),
               ),
             ),
             SizedBox(height: 9),
@@ -157,9 +165,9 @@ class _TimerScreenState extends State<TimerScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: List.generate(
-                      10,
+                      returnStations.length,
                           (index) => stationCard(
-                        name: "Carm",
+                        name: returnStations[index],
                         image: "images/scooter_prev_ui.png",
                         isSelected: (index == selectedCardIndex),
                         onPressed: () => onCardPressed(index),
@@ -169,6 +177,7 @@ class _TimerScreenState extends State<TimerScreen> {
                 ),
               ),
             ),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 _navigateToHomeScreenWithPopup(context);
@@ -197,28 +206,59 @@ class _TimerScreenState extends State<TimerScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Popup Dialog'),
-          content: Text('Do you want to end the trip?'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0), // Adjust the radius as needed
+          ),
+          title: Text('End trip', style:TextStyle(fontWeight: FontWeight.w700)),
+          content: Text('Do you want to end the trip?', style:TextStyle(fontWeight: FontWeight.w100)),
           actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                // Close the dialog
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel'),
+        ButtonBar(
+            alignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 150.0,
+              child: TextButton(
+                onPressed: () {
+                  // Close the dialog
+                  Navigator.of(context).pop();
+                },
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0), // Adjust the radius as needed
+                  ),
+                  padding: EdgeInsets.all(16.0),
+                  side: BorderSide(color: Colors.blue), // Set the border color
+                  primary: Colors.white, // Set the background color
+                  // onPrimary: Colors.blue, // Set the color of the corners to blue
+                ),
+                child: Text('Cancel', style: TextStyle(color: Colors.blue)),
+              ),
             ),
-            TextButton(
-              onPressed: () {
-                // Close the dialog
-                Navigator.of(context).pop();
+              SizedBox(
+                width: 150.0,
+              child: TextButton(
+                onPressed: () {
+                  // Close the dialog
+                  Navigator.of(context).pop();
 
-                // Navigate back to the home screen
-                Navigator.popUntil(
-                    context, (route) => route.settings.name == MapSample.id);
-              },
-              child: Text('Yes'),
+                  // Navigate back to the home screen
+                  Navigator.popUntil(
+                      context, (route) => route.settings.name == MapSample.id);
+
+                  station_scooters.return_to_station(station_scooters.formatStationNameInDb(returnStations[selectedCardIndex]), widget.scooter_id);
+                },
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0), // Adjust the radius as needed
+                  ),
+                  padding: EdgeInsets.all(16.0), // Set the border color
+                  primary: Colors.blue, // Set the background color
+                  onPrimary: Colors.white, // Set the color of the corners to blue
+                ),
+                child: Text('Yes', style: TextStyle(color:Colors.white),),
+              ),
             ),
-          ],
+          ])],
         );
       },
     );
