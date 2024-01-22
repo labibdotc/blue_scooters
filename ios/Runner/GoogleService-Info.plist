@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>co.labib.bluescooters</string>
+	<string>co.labib.purplescooters</string>
 	<key>PROJECT_ID</key>
 	<string>blue-scooters</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:347731564601:ios:0705890ecf1a8c6caa95e8</string>
+	<string>1:347731564601:ios:5e78fa7c8cb0f9f2aa95e8</string>
+	<key>DATABASE_URL</key>
+	<string>https://blue-scooters-default-rtdb.firebaseio.com</string>
 </dict>
 </plist>

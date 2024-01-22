@@ -1,4 +1,4 @@
-import 'package:bluescooters/db/SquareUserData.dart';
+import 'package:bluescooters/db/Users.dart';
 import 'package:bluescooters/payment/PaymentsRepository.dart';
 import 'package:bluescooters/widgets/dragableWidget.dart';
 import 'package:bluescooters/payment/PaymentsRepository.dart';
@@ -8,7 +8,7 @@ import 'package:square_in_app_payments/in_app_payments.dart';
 import 'package:square_in_app_payments/models.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:bluescooters/db/get_scooters.dart';
+import 'package:bluescooters/db/StationScooters.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 final LatLngBounds sydneyBounds = LatLngBounds(

@@ -1,7 +1,7 @@
 // import 'package:flutter/material.dart';
 // import 'dart:async';
 // import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:bluescooters/db/get_scooters.dart';
+// import 'package:bluescooters/db/StationScooters.dart';
 //
 //
 // class MyApp extends StatelessWidget {

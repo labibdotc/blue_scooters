@@ -49,6 +49,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '347731564601',
     projectId: 'blue-scooters',
     authDomain: 'blue-scooters.firebaseapp.com',
+    databaseURL: 'https://blue-scooters-default-rtdb.firebaseio.com',
     storageBucket: 'blue-scooters.appspot.com',
     measurementId: 'G-22XQ3RJBFE',
   );
@@ -58,16 +59,18 @@ class DefaultFirebaseOptions {
     appId: '1:347731564601:android:c3ee24d81166fe54aa95e8',
     messagingSenderId: '347731564601',
     projectId: 'blue-scooters',
+    databaseURL: 'https://blue-scooters-default-rtdb.firebaseio.com',
     storageBucket: 'blue-scooters.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDEPMOeZYx7ysiPJEYvsEkH_996PIdEIWM',
-    appId: '1:347731564601:ios:0705890ecf1a8c6caa95e8',
+    appId: '1:347731564601:ios:5e78fa7c8cb0f9f2aa95e8',
     messagingSenderId: '347731564601',
     projectId: 'blue-scooters',
+    databaseURL: 'https://blue-scooters-default-rtdb.firebaseio.com',
     storageBucket: 'blue-scooters.appspot.com',
-    iosBundleId: 'co.labib.bluescooters',
+    iosBundleId: 'co.Labib.bluescooters.try',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -75,6 +78,7 @@ class DefaultFirebaseOptions {
     appId: '1:347731564601:ios:11527f0a032281bfaa95e8',
     messagingSenderId: '347731564601',
     projectId: 'blue-scooters',
+    databaseURL: 'https://blue-scooters-default-rtdb.firebaseio.com',
     storageBucket: 'blue-scooters.appspot.com',
     iosBundleId: 'com.example.flashchat.RunnerTests',
   );

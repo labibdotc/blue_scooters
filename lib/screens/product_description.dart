@@ -6,8 +6,12 @@ import 'package:bluescooters/screens/InTrip.dart';
 import 'package:bluescooters/payment/PaymentsRepository.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:bluescooters/screens/location.dart';
-
+import 'package:bluescooters/screens/InTrip.dart';
+import 'dart:math';
+import 'package:bluescooters/db/TripPictures.dart';
+import 'package:bluescooters/db/TripInfo.dart';
 import 'package:bluescooters/screens/camera.dart';
+
 import 'package:bluescooters/screens/payment.dart';
 final firestore = FirebaseFirestore.instance;
 User? loggedInUser;
@@ -41,7 +45,26 @@ class _ProductDescriptionState extends State<ProductDescription> {
   late String scooter_id;
   late String scooter_owner;
   late double payment_amount;
+  static String generateRandomTripId() {
+    int len = 20;
+    var r = Random();
+    const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+    return List.generate(len, (index) => _chars[r.nextInt(_chars.length)]).join();
+  }
+  Future<void> actionsAfterScooterCheckoutPicture(BuildContext context, String imagePath, DateTime dateTime, int scooter_start_price) async {
+    // Handle the tap for the second button
+    print("Accepted Image");
+    //Step 1: generate a unique trip id of len 20
+    String tripId = generateRandomTripId();
+    //Save picture
+    TripPictures.uploadImageToFirebase(imagePath, 'trips/${tripId}/start'); //TODO: decide if we should make the user wait until we make sure the picture is in the cloud
+    await TripInfo.uploadStartInfoToFirebase(tripId, imagePath, dateTime,scooter_start_price);
 
+
+
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => InTrip(scooter_id: scooter_id, start_time: dateTime, trip_id: tripId,dollarsRatePer30Mins: payment_amount,)));
+
+  }
   @override
   void initState() {
     // TODO: implement initState
@@ -265,8 +288,8 @@ class _ProductDescriptionState extends State<ProductDescription> {
 
                                     print("Payment went through");
                                     print("Camera: take pictures with instructions");
-                                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => InTrip(scooter_id: scooter_id)));
 
+                                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => CameraApp(scooter_id: scooter_id, scooter_start_price: (100*payment_amount).toInt(), ))); //TODO: make return station not required
 
                                   } else {
                                     setState(() {

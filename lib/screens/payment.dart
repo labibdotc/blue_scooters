@@ -63,60 +63,61 @@ class _PaymentState extends State<Payment>{
   @override
   Widget build(BuildContext context) {
     print("building payment screen");
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text('\$\$'),
-      ),
-      body:Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Add your payment UI components here
-            Text(
-              'Welcome to the Payment Page!',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
-            ),
-            SizedBox(height: 20),
-            // Example: Display payment amount
-            Text(
-              'Amount: \$${widget.payment_amount}',
-              style: TextStyle(fontSize: 16, color: Colors.black),
-            ),
-            SizedBox(height: 20),
-            (errorMessage.isNotEmpty ?
-            Text(
-              errorMessage,
-              style: TextStyle(color: Colors.red),
-            )
-                : Container(width: 0,height: 10,)),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () async {
-                // Trigger the card entry flow when the button is pressed
-                print("Processing payment logic");
-                var result = await PaymentsRepository.actuallyMakeTheCharge(widget.scooter_id, widget.owner_id, widget.payment_amount);
-                if (result == 'Success!') {
-                  setState(() {
-                    errorMessage = ''; // Set the error message
-                  });
-                  print("Payment went through");
-                  print("Camera: take pictures with instructions");
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => InTrip(scooter_id: "hehe",)));
-                } else {
-                  setState(() {
-                    errorMessage = result; // Set the error message
-                  });
-                }
-
-              },
-              child:
-                  Text('Cash and fly!'),
-            ),
-          ],
-        ),
-      )
-
-    );
+    return Container();
+    // return Scaffold(
+    //   backgroundColor: Colors.white,
+    //   appBar: AppBar(
+    //     title: Text('\$\$'),
+    //   ),
+    //   body:Center(
+    //     child: Column(
+    //       mainAxisAlignment: MainAxisAlignment.center,
+    //       children: [
+    //         // Add your payment UI components here
+    //         Text(
+    //           'Welcome to the Payment Page!',
+    //           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+    //         ),
+    //         SizedBox(height: 20),
+    //         // Example: Display payment amount
+    //         Text(
+    //           'Amount: \$${widget.payment_amount}',
+    //           style: TextStyle(fontSize: 16, color: Colors.black),
+    //         ),
+    //         SizedBox(height: 20),
+    //         (errorMessage.isNotEmpty ?
+    //         Text(
+    //           errorMessage,
+    //           style: TextStyle(color: Colors.red),
+    //         )
+    //             : Container(width: 0,height: 10,)),
+    //         SizedBox(height: 10),
+    //         ElevatedButton(
+    //           onPressed: () async {
+    //             // Trigger the card entry flow when the button is pressed
+    //             print("Processing payment logic");
+    //             var result = await PaymentsRepository.actuallyMakeTheCharge(widget.scooter_id, widget.owner_id, widget.payment_amount);
+    //             if (result == 'Success!') {
+    //               setState(() {
+    //                 errorMessage = ''; // Set the error message
+    //               });
+    //               print("Payment went through");
+    //               print("Camera: take pictures with instructions");
+    //               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => InTrip(scooter_id: "hehe",)));
+    //             } else {
+    //               setState(() {
+    //                 errorMessage = result; // Set the error message
+    //               });
+    //             }
+    //
+    //           },
+    //           child:
+    //               Text('Cash and fly!'),
+    //         ),
+    //       ],
+    //     ),
+    //   )
+    //
+    // );
   }
 }

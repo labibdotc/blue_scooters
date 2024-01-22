@@ -1,14 +1,22 @@
-import 'package:bluescooters/db/scooter_stations.dart';
+import 'package:bluescooters/db/ScooterStations.dart';
 import 'package:flutter/material.dart';
 import 'package:bluescooters/screens/location.dart';
 import 'dart:async';
 import 'package:bluescooters/widgets/station_card.dart';
-import 'package:bluescooters/db/get_scooters.dart';
-import 'package:bluescooters/db/scooter_stations.dart';
+import 'package:bluescooters/db/StationScooters.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:bluescooters/screens/camera.dart';
+
+
+
 class InTrip extends StatelessWidget {
   static const String id = "InTrip";
   final String scooter_id;
-  InTrip({required this.scooter_id});
+  final String trip_id;
+  final DateTime start_time;
+  final double dollarsRatePer30Mins;
+
+  InTrip({required this.scooter_id, required this.trip_id, required this.start_time, required this.dollarsRatePer30Mins});
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -18,14 +26,18 @@ class InTrip extends StatelessWidget {
           return false;
         },
         child: MaterialApp(
-          home: TimerScreen(scooter_id: scooter_id),
-        ));
+          home: TimerScreen(scooter_id: scooter_id, start_time: start_time, dollarsRatePer30Mins: dollarsRatePer30Mins, trip_id: trip_id),
+        )
+    );
   }
 }
 
 class TimerScreen extends StatefulWidget {
   final String scooter_id;
-  TimerScreen({required this.scooter_id});
+  final DateTime start_time;
+  final double dollarsRatePer30Mins;
+  final String trip_id;
+  TimerScreen({required this.scooter_id, required this.start_time, required this.dollarsRatePer30Mins, required this.trip_id});
   @override
   _TimerScreenState createState() => _TimerScreenState();
 }
@@ -44,6 +56,7 @@ class _TimerScreenState extends State<TimerScreen> {
         returnStations = list;
       });
     });
+
   }
 
   void _updateTimer(Timer timer) {
@@ -84,6 +97,14 @@ class _TimerScreenState extends State<TimerScreen> {
       selectedCardIndex = index;
     });
   }
+  void _launchURL() async {
+    const url = 'https://docs.google.com/forms/d/e/1FAIpQLSd2HFSNsy65qfeOvIkJ-3Qqmyzr15Zleo3F6UDYpsrAdk0YHQ/viewform'; // Replace with the URL you want to open
+    if (await canLaunch(url)) {
+      await launch(url, forceSafariVC: true);
+    } else {
+      _navigateToHomeScreenWithPopup(context,'Error','Talk to developers');
+    }
+  }
   List<String>returnStations = [];
   @override
   Widget build(BuildContext context) {
@@ -99,18 +120,25 @@ class _TimerScreenState extends State<TimerScreen> {
             SizedBox(
                 height:
                     statusBarHeight + 28), // Empty space to position the button
-            Container(
-              width: 374, // Set the width of the rectangle
-              height: 48, // Set the height of the rectangle
-              decoration: BoxDecoration(
-                color: Color(0xFFF8E8F8), // Set the color of the rectangle
-                borderRadius: BorderRadius.circular(8), // Set the corner radius
-              ),
-              child: Center(
-                child: Text(
-                  'Make money out of your scooter too', //TODO: make this pumpy for better interactivity and to get more clicks
-                  style: TextStyle(
-                      color: Color(0xFF6938D3), fontWeight: FontWeight.w700),
+            GestureDetector(
+              onTap: () {
+                // Add your button's functionality here
+                _launchURL();
+              },
+              child: Container(
+                width: 374, // Set the width of the rectangle
+                height: 48, // Set the height of the rectangle
+                decoration: BoxDecoration(
+                  color: Color(0xFFF8E8F8), // Set the color of the rectangle
+                  borderRadius: BorderRadius.circular(8), // Set the corner radius
+                ),
+                child: Center(
+                  child:
+                  Text(
+                    'Make money out of your scooter too', //TODO: make this pumpy for better interactivity and to get more clicks
+                    style: TextStyle(
+                        color: Color(0xFF6938D3), fontWeight: FontWeight.w700),
+                  ),
                 ),
               ),
             ),
@@ -180,7 +208,7 @@ class _TimerScreenState extends State<TimerScreen> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                _navigateToHomeScreenWithPopup(context);
+                _navigateToHomeScreenWithPopup(context, 'End trip','Do you want to end the trip?');
               },
               style: ElevatedButton.styleFrom(
                 primary: Color(0xFF6938D3),
@@ -200,8 +228,10 @@ class _TimerScreenState extends State<TimerScreen> {
       ),
     );
   }
+//
+  //
 
-  void _navigateToHomeScreenWithPopup(BuildContext context) {
+  void _navigateToHomeScreenWithPopup(BuildContext context, String title, String content) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -209,8 +239,8 @@ class _TimerScreenState extends State<TimerScreen> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0), // Adjust the radius as needed
           ),
-          title: Text('End trip', style:TextStyle(fontWeight: FontWeight.w700)),
-          content: Text('Do you want to end the trip?', style:TextStyle(fontWeight: FontWeight.w100)),
+          title: Text(title, style:TextStyle(fontWeight: FontWeight.w700)),
+          content: Text(content, style:TextStyle(fontWeight: FontWeight.w100)),
           actions: <Widget>[
         ButtonBar(
             alignment: MainAxisAlignment.center,
@@ -238,14 +268,23 @@ class _TimerScreenState extends State<TimerScreen> {
                 width: 150.0,
               child: TextButton(
                 onPressed: () {
+                  //TODO: move this to server and make sure system time of server never changes.
+                  //TODO: research this topic to avoid money loss.
                   // Close the dialog
                   Navigator.of(context).pop();
+                  //get start time from database
 
-                  // Navigate back to the home screen
-                  Navigator.popUntil(
-                      context, (route) => route.settings.name == MapSample.id);
+                  Map<String,dynamic> returnData = {
+                    'trip_id': widget.trip_id,
+                    'start_time': widget.start_time,
+                      'return_station': returnStations[selectedCardIndex]
+                  };
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => CameraApp(scooter_id: widget.scooter_id, scooter_start_price: (widget.dollarsRatePer30Mins*100).toInt(), returnData: returnData)));
+                  // Navigator.popUntil(
+                  //     context, (route) => route.settings.name == MapSample.id);
+                  //
+                  // station_scooters.return_to_station(station_scooters.formatStationNameInDb(returnStations[selectedCardIndex]), widget.scooter_id);
 
-                  station_scooters.return_to_station(station_scooters.formatStationNameInDb(returnStations[selectedCardIndex]), widget.scooter_id);
                 },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(

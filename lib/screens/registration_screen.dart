@@ -4,7 +4,7 @@ import 'package:bluescooters/screens/location.dart';
 import 'package:flutter/material.dart';
 import 'package:bluescooters/widgets/roundedButton.dart';
 import 'package:bluescooters/constants.dart';
-import 'package:bluescooters/db/SquareUserData.dart';
+import 'package:bluescooters/db/Users.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'chat_screen.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';

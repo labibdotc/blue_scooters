@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:bluescooters/widgets/roundedButton.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 class WelcomeScreen extends StatefulWidget {
@@ -40,7 +41,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       // print(animation.value);
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

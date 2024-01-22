@@ -1,7 +1,7 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:bluescooters/widgets/scooter_card.dart';
-import 'package:bluescooters/db/get_scooters.dart';
+import 'package:bluescooters/db/StationScooters.dart';
 class DragWidget extends StatefulWidget {
   DragWidget({Key? key}) : super(key: key);
 

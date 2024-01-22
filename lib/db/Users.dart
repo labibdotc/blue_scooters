@@ -29,3 +29,18 @@ class SquareUserData {
       throw Exception("User's account can't hold a card. Please contact developer");
   }
 }
+
+class UserTripData {
+  //throws
+  static Future<void> addTripIdToUser(String user_id, String tripId) async {
+    try {
+      List<String> elementsToAppend = [tripId];
+      await FirebaseFirestore.instance.collection('users').doc(user_id).update({
+        'trips': FieldValue.arrayUnion(elementsToAppend),
+      });
+      print('Elements appended to array field successfully');
+    } catch (e) {
+      print('Error appending elements to array field: $e');
+    }
+  }
+}

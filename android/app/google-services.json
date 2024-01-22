@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "347731564601",
+    "firebase_url": "https://blue-scooters-default-rtdb.firebaseio.com",
     "project_id": "blue-scooters",
     "storage_bucket": "blue-scooters.appspot.com"
   },

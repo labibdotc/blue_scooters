@@ -5,6 +5,7 @@ import 'package:bluescooters/screens/welcome_screen.dart';
 import 'package:bluescooters/screens/login_screen.dart';
 import 'package:bluescooters/screens/registration_screen.dart';
 import 'package:bluescooters/screens/product_description.dart';
+import 'package:bluescooters/screens/email_verification.dart';
 import 'package:bluescooters/screens/payment.dart';
 import 'package:bluescooters/screens/InTrip.dart';
 import 'package:bluescooters/screens/stream_experiment.dart';//TODO: remove in production
@@ -23,15 +24,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //name: "co.labib.bluescooters"
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
-  // auth = FirebaseAuth.instanceFor(app: app);
-  // await FirebaseFirestore.instance.collection("stations").doc("Campus_Center").collection("scooters").get().then((event) {
-  //   for (var doc in event.docs) {
-  //     print("${doc.id} => ${doc.data()}");
-  //   }
-  // }).catchError((error) {
-  //   print('Error: $error');
-  // })
-  // ;
   await loadDotenv();
   Cameras = await availableCameras();
   runApp(FlashChat());
@@ -76,11 +68,32 @@ class FlashChat extends StatelessWidget {
             settings.arguments as Map<String, dynamic>;
 
             // Check if the required parameter is present
-            if (arguments.containsKey('scooter_id')) {
+            if (arguments.containsKey('scooter_id') && arguments.containsKey('trip_id') && arguments.containsKey('start_time')&& arguments.containsKey('dollarsRatePer30Mins') ) {
               // Return MaterialPageRoute with the ProductDescription widget
               return MaterialPageRoute(
                 builder: (context) => InTrip(
                   scooter_id: arguments['scooter_id'],
+                  trip_id: arguments['trip_id'],
+                  start_time: arguments['start_time'],
+                    dollarsRatePer30Mins: arguments['dollarsRatePer30Mins']
+                ),
+              );
+            }
+          }
+          if (settings.name == CameraApp.id) {
+            // Extract arguments from settings
+            Map<String, dynamic> arguments =
+            settings.arguments as Map<String, dynamic>;
+
+            // Check if the required parameter is present
+            if (arguments.containsKey('scooter_id') && arguments.containsKey('scooter_start_price')&& arguments.containsKey('returnData')) {
+              // Return MaterialPageRoute with the ProductDescription widget
+              return MaterialPageRoute(
+                builder: (context) => CameraApp(
+                  scooter_id: arguments['scooter_id'],
+                    scooter_start_price: arguments['scooter_start_price'],
+                    // onPictureSubmission: arguments['onPictureSubmission'],
+                    returnData:arguments['returnData']
                 ),
               );
             }
@@ -108,15 +121,15 @@ class FlashChat extends StatelessWidget {
           // For example, return a MaterialPageRoute for a default page
           return MaterialPageRoute(builder: (context) => Container(color: Colors.white));
         },
-      initialRoute: WelcomeScreen.id,
+      initialRoute: LoginScreen.id,
       routes:{
         WelcomeScreen.id: (context) => WelcomeScreen(),
         LoginScreen.id: (context) => LoginScreen(),
         RegistrationScreen.id: (context) => RegistrationScreen(),
-        CameraApp.id: (context) => CameraApp(),
         // MyApp.id: (context) => MyApp(),
         MapSample.id: (context) => MapSample(),
         ChatToDemoStream.id: (context) => ChatToDemoStream(),
+        WaitingScreen.id: (context) => WaitingScreen()
 
       }
     );
